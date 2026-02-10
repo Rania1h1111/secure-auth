@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SecureAuth — Identification sécurisée</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <main class="page">
+    <section class="auth-card" aria-label="Authentification SecureAuth">
+
+      <!-- Marque -->
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo SecureAuth">
+            <path d="M50 10 L20 25 L20 50 Q20 75 50 90 Q80 75 80 50 L80 25 Z"
+                  fill="url(#gradient)"
+                  stroke="#1e40af"
+                  stroke-width="2"/>
+            <rect x="40" y="45" width="20" height="15" rx="2" fill="white"/>
+            <path d="M43 45 V40 Q43 35 50 35 Q57 35 57 40 V45"
+                  stroke="white"
+                  stroke-width="3"
+                  fill="none"/>
+            <circle cx="50" cy="52" r="2" fill="#1e40af"/>
+            <line x1="50" y1="54" x2="50" y2="57" stroke="#1e40af" stroke-width="2"/>
+
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="brand-text">
+          <h1>SecureAuth</h1>
+          <p>Plateforme sécurisée</p>
+        </div>
+      </div>
+
+      <!-- Messages flash -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-wrap" aria-live="polite">
+            {% for cat, msg in messages %}
+              {% if cat == "ok" %}
+                <div class="flash success" role="alert">{{ msg }}</div>
+              {% else %}
+                <div class="flash error" role="alert">{{ msg }}</div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist" aria-label="Choix connexion / inscription">
+        <button class="tab active" id="tab-login" type="button" role="tab" aria-selected="true" aria-controls="view-login">
+          Se connecter
+        </button>
+        <button class="tab" id="tab-register" type="button" role="tab" aria-selected="false" aria-controls="view-register">
+          Créer un compte
+        </button>
+      </div>
+
+      <!-- Vue Connexion -->
+      <section id="view-login" class="view active" role="tabpanel" aria-labelledby="tab-login">
+        <h2>Se connecter</h2>
+
+        <form id="loginForm" method="post" action="{{ url_for('login') }}" autocomplete="off" novalidate>
+          <div class="field">
+            <label for="username">Identifiant</label>
+            <div class="input-icon">
+              <span aria-hidden="true">👤</span>
+              <input id="username" name="username" type="text" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="password">Mot de passe</label>
+            <div class="input-icon">
+              <span aria-hidden="true">🔒</span>
+              <input id="password" name="password" type="password" required />
+              <button class="ghost" type="button" id="togglePassword" aria-label="Afficher ou masquer le mot de passe">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="reset" class="btn secondary">Reset</button>
+            <button type="submit" class="btn primary">Se connecter</button>
+          </div>
+        </form>
+
+        <div class="info">
+          <p><strong>Compte de test :</strong> admin / Admin123!</p>
+          <p class="lockline">🔒 Connexion sécurisée</p>
+        </div>
+      </section>
+
+      <!-- Vue Inscription -->
+      <section id="view-register" class="view" role="tabpanel" aria-labelledby="tab-register">
+        <h2>Créer un compte</h2>
+
+        <form method="post" action="{{ url_for('add_account') }}" autocomplete="off" novalidate>
+          <div class="field">
+            <label for="new_username">Nouvel identifiant</label>
+            <div class="input-icon">
+              <span aria-hidden="true">👤</span>
+              <input id="new_username" name="new_username" type="text" minlength="3" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="new_password">Nouveau mot de passe</label>
+            <div class="input-icon">
+              <span aria-hidden="true">🔐</span>
+              <input id="new_password" name="new_password" type="password" minlength="8" required />
+              <button class="ghost" type="button" id="toggleNewPassword" aria-label="Afficher ou masquer le mot de passe">
+                👁️
+              </button>
+            </div>
+            <div class="strength">
+              <div class="bar" id="pwBar"></div>
+              <span id="pwText">Force : —</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn primary full">Créer mon compte</button>
+
+          <div class="info">
+            <p class="muted">Astuce : 8+ caractères, majuscules/minuscules, chiffres, symbole.</p>
+          </div>
+        </form>
+      </section>
+
+    </section>
+  </main>
+
+  <script>
+    // Tabs
+    const tabLogin = document.getElementById("tab-login");
+    const tabRegister = document.getElementById("tab-register");
+    const viewLogin = document.getElementById("view-login");
+    const viewRegister = document.getElementById("view-register");
+
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      viewLogin.classList.add("active");
+      viewRegister.classList.remove("active");
+      tabLogin.setAttribute("aria-selected", "true");
+      tabRegister.setAttribute("aria-selected", "false");
+    });
+
+    tabRegister.addEventListener("click", () => {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      viewRegister.classList.add("active");
+      viewLogin.classList.remove("active");
+      tabRegister.setAttribute("aria-selected", "true");
+      tabLogin.setAttribute("aria-selected", "false");
+    });
+
+    // Toggle password (login)
+    const togglePassword = document.getElementById("togglePassword");
+    const password = document.getElementById("password");
+    togglePassword?.addEventListener("click", () => {
+      password.type = (password.type === "password") ? "text" : "password";
+    });
+
+    // Toggle password 
+    const toggleNewPassword = document.getElementById("toggleNewPassword");
+    const newPassword = document.getElementById("new_password");
+    toggleNewPassword?.addEventListener("click", () => {
+      newPassword.type = (newPassword.type === "password") ? "text" : "password";
+    });
+
+    // Password strength 
+    const pwBar = document.getElementById("pwBar");
+    const pwText = document.getElementById("pwText");
+
+    function strengthScore(pw) {
+      let score = 0;
+      if (!pw) return 0;
+      if (pw.length >= 8) score++;
+      if (pw.length >= 12) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[a-z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      return Math.min(score, 6);
+    }
+
+    function updateStrength() {
+      const s = strengthScore(newPassword.value);
+      const pct = (s / 6) * 100;
+      pwBar.style.width = pct + "%";
+
+      const labels = ["Très faible", "Faible", "Moyen", "Correct", "Bon", "Très bon", "Excellent"];
+      pwText.textContent = "Force : " + labels[s];
+    }
+
+    newPassword?.addEventListener("input", updateStrength);
+    updateStrength();
+  </script>
+</body>
+</html>
