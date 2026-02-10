@@ -1,4 +1,4 @@
-# SecureAuth — Formulaire d’identification sécurisé (M1 SSI)
+# SecureAuth — Formulaire d’identification sécurisé 
 
 Projet réalisé dans le cadre du cours **Sécurité des Systèmes d’Information** (Février 2026).  
 Objectif : créer un **formulaire d’identification sécurisé** avec :
