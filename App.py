@@ -12,11 +12,7 @@ import logging
 
 app = Flask(__name__)
 
-# =========================
-# A2 - Secure configuration
-# =========================
-# IMPORTANT : mets une SECRET_KEY fixe via variable d'environnement si possible
-# Windows PowerShell: setx SECRET_KEY "une_cle_longue_random"
+
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "CHANGE_ME_LOCAL_" + "1234567890abcdef")
 
 # Cookies session (A2 + A7)
@@ -45,9 +41,7 @@ REGISTER_BLOCK_SECONDS = 60
 FAILED_REGISTER = {}  # ip -> {"count": int, "until": ts}
 
 
-# =========================
-# DB helpers
-# =========================
+
 def db_connect():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -65,7 +59,6 @@ def init_db():
         """)
         conn.commit()
 
-        # Ajoute un compte de test si la table est vide
         c = conn.execute("SELECT COUNT(*) AS c FROM users").fetchone()["c"]
         if c == 0:
             conn.execute(
@@ -77,9 +70,7 @@ def init_db():
 init_db()
 
 
-# =========================
-# A1 - Access control
-# =========================
+
 def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
@@ -90,9 +81,7 @@ def login_required(view):
     return wrapped
 
 
-# =========================
-# CSRF (simple, stable)
-# =========================
+
 def ensure_csrf_token():
     # Ne dépend pas d'un token changé au login: stable
     if "csrf_token" not in session:
@@ -121,9 +110,7 @@ def inject_csrf():
     return {"csrf_token": session.get("csrf_token", "")}
 
 
-# =========================
-# Security headers (A2)
-# =========================
+
 @app.after_request
 def add_security_headers(resp):
     resp.headers["X-Content-Type-Options"] = "nosniff"
@@ -140,9 +127,7 @@ def add_security_headers(resp):
     return resp
 
 
-# =========================
-# Rate limit helpers
-# =========================
+
 def client_ip():
     return request.remote_addr or "unknown"
 
@@ -161,9 +146,7 @@ def register_fail(store: dict, max_tries: int, block_seconds: int):
     store[ip] = data
 
 
-# =========================
-# A7 - Password policy
-# =========================
+
 def is_strong_password(p: str) -> bool:
     if len(p) < 8:
         return False
@@ -178,9 +161,7 @@ def is_strong_password(p: str) -> bool:
     return True
 
 
-# =========================
-# Routes
-# =========================
+
 @app.get("/")
 def index():
     return redirect(url_for("login"))
@@ -281,9 +262,7 @@ def logout():
     return redirect(url_for("login"))
 
 
-# =========================
-# A10 - Error handling
-# =========================
+
 @app.errorhandler(403)
 def err403(e):
     return render_template("error.html", code=403, message="Requête refusée (CSRF invalide ou accès non autorisé)."), 403
