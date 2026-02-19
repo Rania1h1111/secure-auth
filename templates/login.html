@@ -11,7 +11,6 @@
   <main class="page">
     <section class="auth-card" aria-label="Authentification SecureAuth">
 
-      <!-- Marque -->
       <div class="brand">
         <div class="logo" aria-hidden="true">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo SecureAuth">
@@ -26,7 +25,6 @@
                   fill="none"/>
             <circle cx="50" cy="52" r="2" fill="#1e40af"/>
             <line x1="50" y1="54" x2="50" y2="57" stroke="#1e40af" stroke-width="2"/>
-
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
@@ -42,7 +40,6 @@
         </div>
       </div>
 
-      <!-- Messages flash -->
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <div class="flash-wrap" aria-live="polite">
@@ -57,7 +54,6 @@
         {% endif %}
       {% endwith %}
 
-      <!-- Tabs -->
       <div class="tabs" role="tablist" aria-label="Choix connexion / inscription">
         <button class="tab active" id="tab-login" type="button" role="tab" aria-selected="true" aria-controls="view-login">
           Se connecter
@@ -67,11 +63,13 @@
         </button>
       </div>
 
-      <!-- Vue Connexion -->
+      <!-- Connexion -->
       <section id="view-login" class="view active" role="tabpanel" aria-labelledby="tab-login">
         <h2>Se connecter</h2>
 
-        <form id="loginForm" method="post" action="{{ url_for('login') }}" autocomplete="off" novalidate>
+        <form method="post" action="{{ url_for('login') }}" autocomplete="off" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
           <div class="field">
             <label for="username">Identifiant</label>
             <div class="input-icon">
@@ -85,9 +83,7 @@
             <div class="input-icon">
               <span aria-hidden="true">🔒</span>
               <input id="password" name="password" type="password" required />
-              <button class="ghost" type="button" id="togglePassword" aria-label="Afficher ou masquer le mot de passe">
-                👁️
-              </button>
+              <button class="ghost" type="button" id="togglePassword" aria-label="Afficher ou masquer le mot de passe">👁️</button>
             </div>
           </div>
 
@@ -103,15 +99,17 @@
         </div>
       </section>
 
-      <!-- Vue Inscription -->
+      <!-- Inscription -->
       <section id="view-register" class="view" role="tabpanel" aria-labelledby="tab-register">
         <h2>Créer un compte</h2>
 
         <form method="post" action="{{ url_for('add_account') }}" autocomplete="off" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
           <div class="field">
             <label for="new_username">Nouvel identifiant</label>
             <div class="input-icon">
-              <span aria-hidden="true">👤</span>
+              <span aria-hidden="true">✨</span>
               <input id="new_username" name="new_username" type="text" minlength="3" required />
             </div>
           </div>
@@ -121,10 +119,9 @@
             <div class="input-icon">
               <span aria-hidden="true">🔐</span>
               <input id="new_password" name="new_password" type="password" minlength="8" required />
-              <button class="ghost" type="button" id="toggleNewPassword" aria-label="Afficher ou masquer le mot de passe">
-                👁️
-              </button>
+              <button class="ghost" type="button" id="toggleNewPassword" aria-label="Afficher ou masquer le mot de passe">👁️</button>
             </div>
+
             <div class="strength">
               <div class="bar" id="pwBar"></div>
               <span id="pwText">Force : —</span>
@@ -134,7 +131,7 @@
           <button type="submit" class="btn primary full">Créer mon compte</button>
 
           <div class="info">
-            <p class="muted">Astuce : 8+ caractères, majuscules/minuscules, chiffres, symbole.</p>
+            <p class="muted">Règles : 8+ caractères, majuscules, minuscules, chiffre, symbole.</p>
           </div>
         </form>
       </section>
@@ -143,7 +140,6 @@
   </main>
 
   <script>
-    // Tabs
     const tabLogin = document.getElementById("tab-login");
     const tabRegister = document.getElementById("tab-register");
     const viewLogin = document.getElementById("view-login");
@@ -167,21 +163,18 @@
       tabLogin.setAttribute("aria-selected", "false");
     });
 
-    // Toggle password (login)
     const togglePassword = document.getElementById("togglePassword");
     const password = document.getElementById("password");
     togglePassword?.addEventListener("click", () => {
       password.type = (password.type === "password") ? "text" : "password";
     });
 
-    // Toggle password 
     const toggleNewPassword = document.getElementById("toggleNewPassword");
     const newPassword = document.getElementById("new_password");
     toggleNewPassword?.addEventListener("click", () => {
       newPassword.type = (newPassword.type === "password") ? "text" : "password";
     });
 
-    // Password strength 
     const pwBar = document.getElementById("pwBar");
     const pwText = document.getElementById("pwText");
 
@@ -201,7 +194,6 @@
       const s = strengthScore(newPassword.value);
       const pct = (s / 6) * 100;
       pwBar.style.width = pct + "%";
-
       const labels = ["Très faible", "Faible", "Moyen", "Correct", "Bon", "Très bon", "Excellent"];
       pwText.textContent = "Force : " + labels[s];
     }

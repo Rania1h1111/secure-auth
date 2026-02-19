@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SecureAuth — Accueil</title>
+  <title>SecureAuth — Erreur {{ code }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -11,11 +11,11 @@
     <section class="auth-card">
       <div class="brand">
         <div class="brand-text">
-          <h1>Vous êtes connecté ✅</h1>
-          <p>Bienvenue <strong>{{ user }}</strong></p>
+          <h1>Erreur {{ code }}</h1>
+          <p>{{ message }}</p>
         </div>
       </div>
-      <a class="btn secondary full" href="{{ url_for('logout') }}">Se déconnecter</a>
+      <a class="btn primary full" href="{{ url_for('login') }}">Retour</a>
     </section>
   </main>
 </body>
